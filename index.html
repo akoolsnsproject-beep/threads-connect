@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Threads 数字の共有</title>
+<style>
+  :root { --bg: #f6f7f9; --panel: #fff; --fg: #15181d; --muted: #5d6573; --line: #d9dde3; --acc: #0b57d0; --ok: #137333; --bad: #b3261e; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #111317; --panel: #1a1d22; --fg: #eceef2; --muted: #a2a9b5; --line: #30353d; --acc: #7cacf8; --ok: #6dd58c; --bad: #f2928a; } }
+  body { margin: 0; background: var(--bg); color: var(--fg); font-family: "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif; line-height: 1.7; }
+  main { max-width: 32rem; margin: 0 auto; padding: 28px 16px 48px; }
+  h1 { font-size: 1.3rem; margin: 0 0 .4rem; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px; margin-top: 16px; }
+  .code { font-family: ui-monospace, Menlo, monospace; font-size: .95rem; word-break: break-all; background: color-mix(in srgb, var(--acc) 8%, transparent); border-radius: 6px; padding: 12px; user-select: all; }
+  button { appearance: none; font: inherit; font-weight: 700; color: #fff; background: var(--acc); border: 0; border-radius: 6px; padding: .7rem 1.2rem; margin-top: 12px; width: 100%; cursor: pointer; }
+  .ok { color: var(--ok); font-weight: 700; } .bad { color: var(--bad); font-weight: 700; }
+  .muted { color: var(--muted); font-size: .9rem; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Threads の数字の共有</h1>
+  <p class="muted">このページは、Threads で「許可する」を押したあとに開くページです。数字を見る許可だけで、投稿・いいね・フォローなどはできません。</p>
+  <div class="card" id="box"></div>
+</main>
+<script>
+  const q = new URLSearchParams(location.search);
+  const code = (q.get('code') || '').replace(/#_?$/, '');
+  const box = document.getElementById('box');
+  if (code) {
+    box.innerHTML = '<p class="ok">許可できました。あと1つだけです</p><p>下のコードをコピーして、<b>このまま公式LINE（またはLINE）で送ってください</b>。1時間で使えなくなるので、早めにお願いします。</p><div class="code" id="c"></div><button id="b" type="button">コードをコピー</button><p class="muted">送ったら、このページは閉じて大丈夫です。</p>';
+    document.getElementById('c').textContent = code;
+    document.getElementById('b').addEventListener('click', async (e) => {
+      try { await navigator.clipboard.writeText(code); e.target.textContent = 'コピーしました'; }
+      catch (err) { e.target.textContent = 'コードを長押ししてコピーしてください'; }
+    });
+  } else if (q.get('error')) {
+    box.innerHTML = '<p class="bad">許可されませんでした</p><p>「キャンセル」を押した場合は、もう一度リンクを開いて「許可する」を押してください。</p>';
+  } else {
+    box.innerHTML = '<p>届いたリンクを開いて、Threads で「許可する」を押すと、ここにコードが出ます。</p>';
+  }
+</script>
+</body>
+</html>
